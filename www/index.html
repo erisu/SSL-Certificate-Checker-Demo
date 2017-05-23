@@ -1,0 +1,82 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta http-equiv="Content-Security-Policy" content="default-src * data:; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
+  <script src="components/loader.js"></script>
+  <script src="lib/onsenui/js/onsenui.min.js"></script>
+
+  <link rel="stylesheet" href="components/loader.css">
+  <link rel="stylesheet" href="lib/onsenui/css/onsenui.css">
+  <link rel="stylesheet" href="lib/onsenui/css/onsen-css-components.css">
+  <link rel="stylesheet" href="css/style.css">
+
+  <script id="news-item" type="text/template">
+    <ons-list-item>
+      <div class="label">{{label}}</div>
+    </ons-list-item>
+  </script>
+
+  <script>
+    document.addEventListener('init', function(event) {
+      var page = event.target;
+      
+      if (page.matches('#news')) {
+        page.querySelector('ons-button').onclick = function() {
+            var url = 'https://monaca.mobi/en/api/news/list?type=news_and_release&limit=50';
+            var fingerprint = '67 C2 0A 07 6F D9 55 23 38 03 E4 78 2E 0C B5 CC 24 0C A8 B7';
+            
+            window.plugins.sslCertificateChecker.check(
+              // Success Callback
+              function success(message) {    
+                fetch(url).then(function(response) {
+                    // Return response into JSON format.
+                    return response.json();
+                  }).then(function(data) {
+                    // Loop though fetched results and inject template into news list.
+                    document.querySelector('#news-list').innerHTML = data.result.map(function(item){
+                      return document.querySelector('#news-item').innerHTML
+                          .replace('{{label}}', item.title);
+                    }).join('');
+                  }).catch(function() {
+                    // Failed to fetch data from server.
+                    ons.notification.alert('Failed to fetch data. Please make sure the internet connection is stable and try again.');
+                  });
+              },
+            
+              // Error Callback
+              function error(message) {
+                if (message === 'CONNECTION_NOT_SECURE') {
+                  // Connection is not secure.
+                  ons.notification.alert('The connection is not secure. Please try again later.');
+                } else if (message.indexOf("CONNECTION_FAILED") >- 1) {
+                  // Connection Issues.
+                  ons.notification.alert('The connection has been lost. Please make sure the internet connection is stable and try again.');
+                }
+              },
+            
+              // URL to test
+              url,
+            
+              // URL Public Key Certificate Fingerprint
+              fingerprint
+            );
+        }
+      }
+    });
+  </script>
+</head>
+<body>
+  <ons-page id="news">
+    <ons-toolbar>
+      <div class="center">Monaca News</div>
+    </ons-toolbar>
+    <p style="text-align: center; padding: 10px;">
+      <ons-button>Fetch Data</ons-button>
+    </p>
+    
+    <ons-list id="news-list"></ons-list>
+  </ons-page>
+</body>
+</html>
