@@ -1,35 +1,22 @@
-/*! onsenui - v2.2.4 - 2017-04-10 */
-/*
-Copyright 2013-2015 ASIAL CORPORATION
+/*! onsenui - v2.10.5 - 2018-10-05 */
+@import url("./ionicons/css/ionicons.min.css");
+@import url("./material-design-iconic-font/css/material-design-iconic-font.min.css");
+@import url("./font_awesome/css/font-awesome.min.css");
+@import url("./font_awesome/css/v4-shims.min.css");
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-   http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
- */
-
-@import url("ionicons/css/ionicons.min.css");
-@import url("material-design-iconic-font/css/material-design-iconic-font.min.css");
-@import url("font_awesome/css/font-awesome.min.css");
-
-/* custom elements */
 ons-page, ons-navigator,
-ons-split-view, ons-sliding-menu, ons-tabbar,
+ons-tabbar,
 ons-gesture-detector {
   display: block;
+  touch-action: manipulation; /* Remove click delay */
 }
 
 ons-navigator,
 ons-tabbar,
+ons-splitter,
+ons-action-sheet,
 ons-dialog,
+ons-toast,
 ons-alert-dialog {
   position: absolute;
   top: 0;
@@ -37,6 +24,15 @@ ons-alert-dialog {
   bottom: 0;
   right: 0;
   overflow: hidden;
+  touch-action: manipulation; /* Remove click delay */
+}
+
+ons-toast {
+  pointer-events: none;
+}
+
+ons-toast .toast {
+  pointer-events: auto;
 }
 
 ons-tab {
@@ -44,23 +40,12 @@ ons-tab {
           transform: translate3d(0, 0, 0);
 }
 
-ons-page, ons-navigator, ons-tabbar, ons-sliding-menu, ons-split-view, ons-dialog, ons-alert-dialog {
+ons-page, ons-navigator, ons-tabbar, ons-dialog, ons-alert-dialog, ons-action-sheet, ons-toast {
   z-index: 2;
 }
 
 ons-fab, ons-speed-dial {
   z-index: 10001;
-}
-
-* {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
-}
-
-input, textarea {
-  -webkit-user-select: auto;
-  -moz-user-select: text;
 }
 
 ons-toolbar:not([inline]), ons-bottom-toolbar {
@@ -69,14 +54,17 @@ ons-toolbar:not([inline]), ons-bottom-toolbar {
   right: 0;
   z-index: 10000;
 }
+
 ons-toolbar:not([inline]) {
   top: 0;
 }
+
 ons-bottom-toolbar {
   bottom: 0;
 }
 
-.page, .page__content {
+.page, .page__content,
+.page--material, .page--material__content {
   background-color: transparent !important;
   background: transparent !important;
 }
@@ -88,13 +76,18 @@ ons-bottom-toolbar {
   -ms-touch-action: pan-y;
 }
 
-.toolbar + .page__background + .page__content {
-  margin-top: -1px;
-  top: 44px;
+.page.overflow-visible,
+.page.overflow-visible .page,
+.page.overflow-visible .page__content,
+.page.overflow-visible ons-navigator,
+.page.overflow-visible ons-splitter {
+  overflow: visible;
 }
 
-.toolbar--material + .page__background + .page__content {
-  top: 56px;
+.page.overflow-visible .page__content.content-swiping,
+.page.overflow-visible .page__content.content-swiping .page,
+.page.overflow-visible .page__content.content-swiping .page__content {
+  overflow: auto;
 }
 
 .page[status-bar-fill] > .page__content {
@@ -106,12 +99,18 @@ ons-bottom-toolbar {
   box-sizing: content-box;
 }
 
-.page[status-bar-fill] > .toolbar + .page__background + .page__content {
+.page[status-bar-fill] > .toolbar:not(.toolbar--transparent) + .page__background,
+.page[status-bar-fill] > .toolbar:not(.toolbar--cover-content) + .page__background + .page__content {
   top: 64px;
 }
 
-.page[status-bar-fill] > .toolbar--material + .page__background + .page__content {
+.page[status-bar-fill] > .toolbar--material:not(.toolbar-transparent) + .page__background,
+.page[status-bar-fill] > .toolbar--material:not(.toolbar--cover-content) + .page__background + .page__content {
   top: 76px;
+}
+
+.page[status-bar-fill] > .toolbar.toolbar--transparent + .page__background {
+  top: 0;
 }
 
 ons-tabbar[status-bar-fill] > .tabbar--top__content {
@@ -134,11 +133,16 @@ ons-tabbar[position="top"] .page[status-bar-fill] > .page__content {
   top: 49px;
 }
 
-.page-with-bottom-toolbar > .page__content {
-  bottom: 44px;
+.page__content > .list:not(.list--material):first-child {
+  margin-top: -1px; /* Avoid double border with toolbar */
 }
 
-ons-dialog[disabled] > .dialog,
+.page--wrapper > .page__background {
+  display: none;
+}
+
+ons-action-sheet[disabled],
+ons-dialog[disabled],
 ons-alert-dialog[disabled],
 ons-popover[disabled] {
   pointer-events: none;
@@ -149,16 +153,17 @@ ons-list-item[disabled] {
    pointer-events: none;
 }
 
+ons-range[disabled] {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
 ons-pull-hook {
   position: relative;
   display: block;
   margin: auto;
   text-align: center;
   z-index: 20002;
-}
-
-ons-splitter {
-  overflow: hidden;
 }
 
 ons-splitter, ons-splitter-mask, ons-splitter-content, ons-splitter-side {
@@ -173,19 +178,19 @@ ons-splitter, ons-splitter-mask, ons-splitter-content, ons-splitter-side {
 }
 
 ons-splitter-mask {
-  z-index: 2;
+  z-index: 4;
   background-color: rgba(0, 0, 0, 0.1);
   display: none;
   opacity: 0;
 }
 
 ons-splitter-content {
-  z-index: 1;
+  z-index: 2;
 }
 
 ons-splitter-side {
   right: auto;
-  z-index: 1;
+  z-index: 2;
 }
 
 ons-splitter-side[side="right"] {
@@ -194,7 +199,7 @@ ons-splitter-side[side="right"] {
 }
 
 ons-splitter-side[mode="collapse"] {
-  z-index: 3;
+  z-index: 5;
   left: auto;
   right: 100%;
 }
@@ -205,9 +210,7 @@ ons-splitter-side[side="right"][mode="collapse"] {
 }
 
 ons-splitter-side[mode="split"] {
-  -webkit-transform: none !important;
-          transform: none !important;
-  transition: none !important;
+  z-index: 3;
 }
 
 ons-toolbar-button > ons-icon[icon*="ion-"] {
@@ -227,48 +230,55 @@ ons-select > select {
   width: 100%;
 }
 
-/*
-Copyright 2013-2015 ASIAL CORPORATION
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-   http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
- */
-
-ons-carousel {
-  display: block;
-  position: relative;
-  width: 100%;
-  overflow: hidden;
-}
-
-ons-carousel-item {
-  display: block;
-  height: 100%;
-  visibility: hidden;
-}
-
-ons-carousel[fullscreen] {
-  position: absolute;
-  top: 0px;
-  right: 0px;
-  left: 0px;
-  bottom: 0px;
-  box-sizing: border-box;
-}
-
 ons-carousel[disabled] {
   pointer-events: none;
   opacity: 0.75;
+}
+
+ons-carousel[fullscreen] {
+  height: 100%;
+}
+
+.ons-status-bar-mock {
+  position: absolute;
+  width: 100%;
+  height: 20px;
+  padding: 0 16px 0 6px;
+  box-sizing: border-box;
+  z-index: 30000;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+          justify-content: space-between;
+  font-size: 12px;
+  line-height: 20px;
+  font-family: Arial, Helvetica;
+}
+
+.ons-status-bar-mock i {
+  padding: 0 2px;
+}
+
+.ons-status-bar-mock.android {
+  color: white;
+  background-color: #222;
+  font-family: Roboto, Arial, Helvetica;
+}
+
+.ons-status-bar-mock.android ~ * {
+  top: 20px;
+  bottom: 0;
+  position: inherit;
+  width: 100%;
+}
+
+.ons-ios-scroll-fix .page:not(.page--wrapper)[shown] > .page__content {
+  overflow-y: hidden;
+}
+.ons-ios-scroll-fix ons-splitter-side > .page:not(.page--wrapper)[shown] > .page__content {
+  overflow-y: auto;
 }
 
 ons-row {
@@ -371,16 +381,22 @@ limitations under the License.
   line-height: inherit;
   font-style: normal;
   font-weight: normal;
+  font-size: inherit;
+  text-rendering: auto;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-:not(ons-toolbar-button) > .ons-icon--ion {
+.segment__button .ons-icon {
+  line-height: initial;
+}
+
+:not(ons-toolbar-button):not(ons-action-sheet-button):not(.segment__button) > .ons-icon--ion {
   line-height: 0.75em;
   vertical-align: -25%;
 }
 
-ons-icon[spin] {
+.ons-icon[spin] {
   -webkit-animation: ons-icon-spin 2s infinite linear;
   -moz-animation: ons-icon-spin 2s infinite linear;
   animation: ons-icon-spin 2s infinite linear;
@@ -433,7 +449,7 @@ ons-icon[spin] {
   transform: rotate(270deg);
 }
 
-ons-icon[fixed-width] {
+.ons-icon[fixed-width] {
   width: 1.28571429em;
   text-align: center;
 }
@@ -460,12 +476,21 @@ ons-icon[fixed-width] {
   font-size: 5em;
 }
 
-ons-input {
+/**
+ * ons-icon with Font Awesome backward compatibility
+ */
+.ons-icon.fa {
+  font-family: 'Font Awesome 5 Brands', 'Font Awesome 5 Free';
+  font-weight: 900;
+}
+
+ons-input, ons-radio, ons-checkbox, ons-search-input {
   display: inline-block;
   position: relative;
 }
 
-ons-input .text-input__container {
+ons-input .text-input,
+ons-search-input .search-input {
   width: 100%;
   display: inline-block;
 }
@@ -478,7 +503,11 @@ ons-input:not([float]) .text-input--material__label--active {
   display: none;
 }
 
-ons-input[disabled] {
+ons-input[disabled],
+ons-radio[disabled],
+ons-checkbox[disabled],
+ons-segment[disabled],
+ons-search-input[disabled] {
   opacity: 0.5;
   pointer-events: none;
 }
@@ -493,6 +522,54 @@ ons-input input.text-input--material::-moz-placeholder {
 
 ons-input input.text-input--material:-ms-input-placeholder {
   color: transparent;
+}
+
+/* Suppress safe area support for pages in splitter sides */
+@media (orientation: landscape) {
+  html[onsflag-iphonex-landscape] ons-splitter-side[side="left"] .page__content {
+    padding-right: 0;
+  }
+  html[onsflag-iphonex-landscape] ons-splitter-side[side="right"] .page__content {
+    padding-left: 0;
+  }
+}
+/* Support the situation that a progress bar is located just below a toolbar */
+@media (orientation: landscape) {
+  html[onsflag-iphonex-landscape] .page__content > ons-progress-bar > .progress-bar {
+    margin-left: -44px;
+    margin-right: -44px;
+    width: calc(100% + 88px);
+  }
+}
+/* Lists in .page__content in splitter-sides */
+@media (orientation: landscape) {
+  /* Suppress left safe area support for pages in right splitter sides */
+  html[onsflag-iphonex-landscape] ons-splitter-side[side="right"] .page__content > .list:not(.list--inset) {
+    margin-left: 0;
+  }
+  html[onsflag-iphonex-landscape] ons-splitter-side[side="right"] .page__content > .list:not(.list--inset) > .list-header {
+    padding-left: 15px;
+  }
+  html[onsflag-iphonex-landscape] ons-splitter-side[side="right"] .page__content > .list:not(.list--inset) > .list-item {
+    padding-left: 14px;
+  }
+
+  /* Suppress right safe area support for pages in left splitter sides */
+  html[onsflag-iphonex-landscape] ons-splitter-side[side="left"] .page__content > .list:not(.list--inset) {
+    margin-right: 0;
+  }
+  html[onsflag-iphonex-landscape] ons-splitter-side[side="left"] .page__content > .list:not(.list--inset) > .list-item--chevron:before {
+    right: 16px;
+  }
+  html[onsflag-iphonex-landscape] ons-splitter-side[side="left"] .page__content > .list:not(.list--inset) > .list-item > .list-item__center:last-child {
+    padding-right: 6px;
+  }
+  html[onsflag-iphonex-landscape] ons-splitter-side[side="left"] .page__content > .list:not(.list--inset) > .list-item > .list-item__right {
+    padding-right: 12px;
+  }
+  html[onsflag-iphonex-landscape] ons-splitter-side[side="left"] .page__content > .list:not(.list--inset) > .list-item > .list-item--chevron__right {
+    padding-right: 30px;
+  }
 }
 
 /*
@@ -518,8 +595,8 @@ ons-progress-bar {
 
 ons-progress-circular {
   display: inline-block;
-  width: 42px;
-  height: 42px;
+  width: 32px;
+  height: 32px;
 }
 
 ons-progress-circular > svg.progress-circular {
@@ -554,11 +631,6 @@ limitations under the License.
   pointer-events: none;
 }
 
-ons-list-item .ripple__wave, ons-list-item .ripple__background,
-.button--material--flat .ripple__wave, .button--material--flat .ripple__background{
-  background: rgba(189, 189, 189, 0.3);
-}
-
 .ripple__background {
   background: rgba(255, 255, 255, 0.2);
   position: absolute;
@@ -582,47 +654,17 @@ ons-list-item .ripple__wave, ons-list-item .ripple__background,
   pointer-events: none;
 }
 
-/*
-Copyright 2013-2015 ASIAL CORPORATION
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-   http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
-*/
-
-ons-sliding-menu {
-  position: absolute;
-  left: 0px;
-  right: 0px;
-  top: 0px;
-  bottom: 0px;
-  z-index: 0;
-  overflow-x: hidden;
+/* FIXME */
+ons-list-item .ripple__wave,
+ons-list-item .ripple__background,
+.button--material--flat .ripple__wave,
+.button--material--flat .ripple__background {
+  background: rgba(189, 189, 189, 0.3);
 }
 
-.onsen-sliding-menu__menu,
-.onsen-sliding-menu__main {
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  bottom: 0px;
-  right: 0px;
-  z-index: 0;
-  margin: 0;
-  padding: 0;
-}
-
-.onsen-sliding-menu__menu {
-  opacity: 0;
+.ripple--light-gray__wave,
+.ripple--light-gray__background {
+  background: rgba(189, 189, 189, 0.3);
 }
 
 
@@ -641,30 +683,56 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-*/
+ */
 
-ons-split-view {
-  position: absolute;
-  left: 0px;
-  right: 0px;
-  top: 0px;
-  bottom: 0px;
-  z-index: 0;
+.ons-swiper {
   overflow: hidden;
+  display: block;
+  box-sizing: border-box;
 }
 
-.onsen-split-view__secondary {
-  opacity: 0;
+.ons-swiper-target {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  height: 100%;
+  z-index: 1;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: row;
+          flex-direction: row;
+}
+
+.ons-swiper-target--vertical {
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+          flex-direction: column;
+}
+
+.ons-swiper-target > * {
+  height: inherit;
+  -webkit-flex-shrink: 0;
+          flex-shrink: 0;
+  box-sizing: border-box;
   width: 100%;
+  position: relative !important;
 }
 
-.onsen-split-view__secondary,
-.onsen-split-view__main {
+.ons-swiper-target.active:not(.swiping) > .page:not([shown]) {
+  visibility: hidden;
+}
+
+.ons-swiper-tabbar .tabbar--material__button:after {
+  display: none;
+}
+
+.ons-swiper-blocker {
+  display: block;
   position: absolute;
-  top: 0px;
-  left: 0px;
-  bottom: 0px;
-  right: 0px;
-  z-index: 0;
-  overflow-x: hidden; 
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  pointer-events: none
 }
